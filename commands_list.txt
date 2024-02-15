@@ -1,0 +1,129 @@
+*********************for gazebo simulation******************
+***in all terminals****
+export TURTLEBOT3_MODEL=waffle_pi 
+****in my ~/.bashrc file now*************
+roslaunch turtlebot3_manipulation_gazebo turtlebot3_manipulation_gazebo.launch
+roslaunch turtlebot3_manipulation_moveit_config move_group.launch
+roslaunch turtlebot3_manipulation_moveit_config moveit_rviz.launch
+roslaunch turtlebot3_manipulation_gui turtlebot3_manipulation_gui.launch
+roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch
+
+****above is valid, below is not********
+
+
+
+*****************************for real life*******************************
+*****on SBC*************
+export TURTLEBOT3_MODEL=waffle_pi 
+******on remote PC**************
+*******set ip address in bashrc explicitly**************
+source ~/.bashrc
+
+roscore
+*****on SBC*************
+roslaunch turtlebot3_bringup turtlebot3_robot.launch
+*****wait for this to complete*****
+
+******on remote PC**************
+roslaunch turtlebot3_manipulation_bringup turtlebot3_manipulation_bringup.launch
+************wait for this to complete*****************
+roslaunch turtlebot3_manipulation_moveit_config move_group.launch
+************wait for this to complete*****************
+roslaunch turtlebot3_manipulation_gui turtlebot3_manipulation_gui.launch
+roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch
+
+
+*******at this point you should be able to move the arm and robot with gui and keyboard teleop
+
+
+ssh ubuntu@172.20.10.8
+
+last time on jackPhone
+
+****below is valid*****
+
+********************this is the way*****************************
+[remote PC]
+roscore
+
+[SBC]
+roslaunch turtlebot3_bringup turtlebot3_robot.launch
+
+[remote PC]
+
+roslaunch turtlebot3_manipulation_bringup turtlebot3_manipulation_bringup.launch
+
+roslaunch turtlebot3_manipulation_moveit_config move_group.launch
+
+roslaunch turtlebot3_manipulation_moveit_config moveit_rviz.launch
+
+roslaunch turtlebot3_manipulation_navigation navigation.launch 
+
+roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch
+
+******run slam and save map, then run nav
+
+roslaunch turtlebot3_manipulation_slam slam.launch
+
+rosrun map_server map_saver -f ~/map
+
+
+roslaunch turtlebot3_manipulation_navigation navigation.launch map_file:=$HOME/map.yaml
+
+
+
+
+***************************new simulation instructions*****************************
+
+roslaunch turtlebot3_manipulation_gazebo turtlebot3_manipulation_gazebo.launch
+
+******now press the play button in gazebo to make it work**************************
+
+roslaunch turtlebot3_manipulation_moveit_config move_group.launch
+
+roslaunch turtlebot3_manipulation_moveit_config moveit_rviz.launch
+
+roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch
+
+
+
+to run autonomous navigation script, run slam, save map, then launch nav node with the map loaded:
+
+roslaunch turtlebot3_manipulation_slam slam.launch
+
+rosrun map_server map_saver -f ~/map
+
+
+roslaunch turtlebot3_manipulation_navigation navigation.launch map_file:=$HOME/map.yaml
+
+
+to find locations to move through the map with, telop to desired position and run:
+
+rostopic echo amcl_pose
+
+copy all pos, q values and pass into moveToPose function in goal_pose script located at:
+
+~/catkin_ws/src/my_robot_tutorials/scripts/rosExperiment1
+
+then run in same directory: 
+python3 init_pose.py 
+
+then,
+
+python3 goal_pose.py 
+
+
+
+****now to do manipulation****
+
+go to 
+
+~/catkin_ws/src/my_robot_tutorials/scripts
+
+run:
+
+python3 manipulator_trajectory.py
+
+to get the values for manipulator positions, use the manipulator gui:
+
+roslaunch turtlebot3_manipulation_gui turtlebot3_manipulation_gui.launch
